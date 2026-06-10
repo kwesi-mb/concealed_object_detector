@@ -41,6 +41,7 @@ def draw_detections(image_path, results):
             cv2.putText(
                 image,
                 f"{label} {conf:.2f}",
+                (x1, y1 - 10),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.6,
                 (0, 255, 0),
