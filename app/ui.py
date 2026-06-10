@@ -24,12 +24,66 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-.main {
-    padding-top: 1rem;
+/* Main app background*/
+[data-testid="stAppViewContainer"] {
+    background-color: white;
 }
 
-h1 {
-    text-align: center;
+/* Main content area */
+.main {
+    background-color: white;
+}
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background-color: #f7f9fc;
+}
+
+/* Headers */
+h1, h2,  h3, h4, h5, h6 {
+    color: #000000;
+    font-weight: 700;
+}
+
+[data-testid="stMarkdownContainer"] h1,
+[data-testid="stMarkdownContainer"] h2,
+[data-testid="stMarkdownContainer"] h3,
+[data-testid="stMarkdownContainer"] h4 {
+    color: #000000;
+    font-weight: 700;
+}
+
+/* Metrics */
+[data-testid="stMetric"] {
+    background-color: #f7f9fc;
+    border-radius: 10px;
+    padding: 15px
+    border-left: 5px solid #0B4EA2;
+}
+
+/* Upload box */
+[data-testid="stFileUploader"] {
+    border: 2px solid #0B4EA2;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+/* Buttons */
+.stButton > button {
+    background-color: #0B4EA2;
+    color: white;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+}
+
+.stButton > button:hover {
+    background-color: #083a79
+}
+
+/* Reduce top spacing */
+.block-container {
+    padding-top: 1rem;
 }
 
 </style>
@@ -41,11 +95,33 @@ detector = WeaponDetector()
 
 # HEADER
 
-st.title(" Concealed Weapon Detection System")
+from PIL import Image
 
-st.markdown(
-    "### AI-Powered Security Screening Platform"
-)
+st.markdown("<div style='padding-top:30px;'></div>", unsafe_allow_html=True)
+
+logo = Image.open("assets/temsconsu_logo.png")
+
+logo_col, title_col = st.columns([1, 5])
+
+with logo_col:
+    st.image(
+        logo,
+        width=120
+    )
+
+with title_col:
+    st.markdown(
+        """
+        <h1 style='margin-bottom:0; color:#0B4EA2;'>
+        Temsconsu SecureVision AI
+        </h1>
+
+        <h4 style='color:#F26722;'>
+        Concealed Weapon Detection & Security Screening Platform
+        </h4>
+        """,
+        unsafe_allow_html=True
+    )
 
 st.divider()
 
@@ -137,10 +213,25 @@ if uploaded_file:
                 f"{highest_conf:.1%}"
             )
 
-            metric3.metric(
-                "Risk Level",
-                risk_level
-            )
+            #metric3.metric(
+            if risk_level == "HIGH":
+
+                st.error(
+                    "HIGH RISK"
+                )
+
+            elif risk_level == "MEDIUM":
+
+                st.warning(
+                    "MEDIUM RISK"
+                )
+
+            else:
+
+                st.success(
+                    "LOW RISK"
+                )
+            #)
 
             st.divider()
 
@@ -202,3 +293,23 @@ if uploaded_file:
             st.success(
                 "No concealed weapon detected."
             )
+
+st.markdown("---")
+
+st.markdown(
+    """
+    <div style="
+        background-color:#0B4EA2;
+        padding:20px;
+        border-radius:10px;
+        text-align:center;
+        margin-top:30px;
+        border-top:5px solid #F26722;
+    ">
+        <h4 style="color:white; margin:0;">
+            Powered by Temsconsu Software Services Company
+        </h4>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
