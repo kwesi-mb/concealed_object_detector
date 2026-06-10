@@ -6,17 +6,20 @@ from PIL import Image
 from detector import WeaponDetector
 from utils import (
     draw_detections,
-    generate_explanation,
     classify_risk,
+    generate_explanation,
     security_recommendation
 )
 
-detector = WeaponDetector()
+# Page configuration
 
 st.set_page_config(
     page_title="Concealed Weapon Detection",
+    page_icon="🔍",
     layout="wide"
 )
+
+# CUSTOM CSS
 
 st.markdown("""
 <style>
@@ -26,31 +29,40 @@ st.markdown("""
 }
 
 h1 {
-    text-align:center
+    text-align: center;
 }
 
 </style>
-""", unsafe_allow_html=True) 
+""", unsafe_allow_html=True)
 
-st.title(
-    "AI-Powered Security Screening Platform"
+# LOAD MODEL
+
+detector = WeaponDetector()
+
+# HEADER
+
+st.title(" Concealed Weapon Detection System")
+
+st.markdown(
+    "### AI-Powered Security Screening Platform"
 )
 
+st.divider()
+
+# FILE UPLOAD
+
 uploaded_file = st.file_uploader(
-    "Upload an image",
+    "Upload a thermal image",
     type=["jpg", "jpeg", "png"]
 )
 
-if uploaded_file:
+# DETECTION WORKFLOW
 
-    st.image(
-        uploaded_file,
-        caption="Uploaded Image",
-        use_container_width=True    
-    )
+if uploaded_file:
 
     if st.button("Run Detection"):
 
+        # Save uploaded file temporarily
         with tempfile.NamedTemporaryFile(
             delete=False,
             suffix=".png"
@@ -62,27 +74,56 @@ if uploaded_file:
 
             image_path = temp_file.name
 
-        results = detector.detect(
-            image_path
+        # Original image
+        original_image = Image.open(image_path)
+
+        #Run inference
+        results = detector.detect(image_path)
+
+        # Draw detection
+        output_image, detections = draw_detections(
+            image_path,
+            results
         )
 
-        output_image, detections = (
-            draw_detections(
-                image_path,
-                results
+        # IMAGE DISPLAY
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            
+            st.subheader("Original Image")
+
+            st.image(
+                original_image,
+                use_container_width=True
             )
-        )
+
+        with col2:
+
+            st.subheader("Detection Result")
+
+            st.image(
+                output_image,
+                use_container_width=True
+            )
+
+        st.divider()
+
+        # IF DETECTION EXISTS
 
         if detections:
-
+            
             highest_conf = max(
                 d["confidence"]
                 for d in detections
             )
 
-            risk = classify_risk(
+            risk_level = classify_risk(
                 highest_conf
             )
+
+            # METRICS
 
             metric1, metric2, metric3 = st.columns(3)
 
@@ -93,81 +134,71 @@ if uploaded_file:
 
             metric2.metric(
                 "Highest Confidence",
-                f"{highest_conf:1%}"
+                f"{highest_conf:.1%}"
             )
 
             metric3.metric(
-                "Risk level",
-                risk
+                "Risk Level",
+                risk_level
             )
+
+            st.divider()
+
+            # CONFIDENCE BAR
 
             st.subheader(
-                "Detection Confidence"
+                "Detection  Confidence"
             )
 
-            st.progress(highest_conf)
+            st.progress(
+                float(highest_conf)
+            )
 
             st.write(
-                f"{highest_conf:1%}"
+                f"{highest_conf:.1%}"
             )
 
+            st.divider()
 
+            # DETECTION TABLE
 
-        st.subheader(
-            "Detection Results"
-        )
-
-        st.image(
-            output_image,
-            use_container_width=True
-        )
-
-        original_image = Image.open(image_path)
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.subheader("Original Image")
-            st.image(
-                original_image,
-                use_container_width=True
+            st.subheader(
+                "Detection Results"
             )
-
-        with col2:
-            st.subheader("Detection Result")
-            st.image(
-                output_image,
-                use_container_width=True
-            )
-
-        if detections:
 
             st.dataframe(
-                pd.DataFrame(detections)
+                pd.DataFrame(detections),
+                use_container_width=True
             )
 
-        explanation = (
-            generate_explanation(
-                detections
+            st.divider()
+
+            # AI EXPLANATION
+
+            st.subheader(
+                "AI Assessment"
             )
-        )
 
-        st.subheader(
-            "AI Assessment"
-        )
-
-        st.info(
-            generate_explanation(
-                detections
+            st.info(
+                generate_explanation(
+                    detections
+                )
             )
-        )
 
-        st.subheader(
-            "Recommended Action"
-        )
+            # RECOMMENDATION
 
-        st.warning(
-            security_recommendation(
-                highest_conf
+            st.subheader(
+                "Recommended Action"
             )
-        )
+
+            st.warning(
+                security_recommendation(
+                    highest_conf
+                )
+            )
+
+        else:
+
+            st.success(
+                "No concealed weapon detected."
+            )

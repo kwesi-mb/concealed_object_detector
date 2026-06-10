@@ -24,7 +24,7 @@ def draw_detections(image_path, results):
 
             detections.append({
                 "label": label,
-                confidence": round(conf, 3)
+                "confidence": round(conf, 3)
             })
 
             cv2.rectangle(
@@ -52,7 +52,7 @@ def classify_risk(confidence):
     if confidence >= 0.9:
         return "HIGH"
 
-    elif confidence >= 0.9:
+    elif confidence >= 0.7:
         return "MEDIUM"
 
     return "LOW"
