@@ -1,6 +1,9 @@
 import cv2
 
 def draw_detections(image_path, results):
+    """
+    Draw bounding boxes on image and extract detections.
+    """
 
     image = cv2.imread(image_path)
 
@@ -11,22 +14,24 @@ def draw_detections(image_path, results):
         for box in result.boxes:
 
             x1, y1, x2, y2 = map(
-                
                 int,
                 box.xyxy[0]
             )
 
-            conf = float(box.conf[0])
+            confidence = float(box.conf[0])
 
-            cls = int(box.cls[0])
+            class_id = int(box.cls[0])
 
-            label = result.names[cls]
+            label = result.names[class_id]
 
-            detections.append({
-                "label": label,
-                "confidence": round(conf, 3)
-            })
+            detections.append(
+                {
+                    "label": label,
+                    "confidence": round(confidence, 3)
+                }
+            )
 
+            # Draw bounding box
             cv2.rectangle(
                 image,
                 (x1, y1),
@@ -35,73 +40,103 @@ def draw_detections(image_path, results):
                 2
             )
 
+            # Draw label
             cv2.putText(
                 image,
-                f"(label) {conf:.2f}",
+                f"{label} {confidence:.2f}",
                 (x1, y1 - 10),
                 cv2.FONT_HERSHEY_SIMPLEX,
-                0.6,
+                0.5,
                 (0, 255, 0),
                 2
             )
 
+    # Convert BGR to RGB for Streamlit
+    image = cv2.cvtColor(
+        image,
+        cv2.COLOR_BGR2RGB
+    )
+
     return image, detections
 
 def classify_risk(confidence):
+    """
+    Classify risk level based on confidence score.
+    """
 
-    if confidence >= 0.9:
-        return "HIGH"
-
-    elif confidence >= 0.7:
+    if confidence >= 0.90:
+        return "HIGH" 
+    
+    elif confidence >= 0.70:
         return "MEDIUM"
 
     return "LOW"
 
 def generate_explanation(detections):
+    """
+    Generate a human-readable explanation.
+    """
 
     if len(detections) == 0:
 
         return (
-            "No concealed weapon was detected."
+            "No concealed weapon was detected in the uploaded image. "
+            "The scanned individual appears clear based on the model's analysis."
         )
 
-    confidence = detections[0]["confidence"]
+    highest_confidence = max(
+        detection["confidence"]
+        for detection in detections
+    )
 
-    if confidence > 0.9:
+    risk_level = classify_risk(
+        highest_confidence
+    )
+
+    if risk_level == "HIGH":
 
         return (
-            f"A concealed weapon was detected "
-            f"with high confidence ({confidence:.1%}). "
-            f"Immediate action is recommended."
+            f"The system detected a concealed weapon with a high confidence score "
+            f"of {highest_confidence:.1%}. "
+            f"This is classified as HIGH risk and warrants immediate attention."
         )
-    
-    elif confidence > 0.7:
+
+    elif risk_level == "MEDIUM":
 
         return (
-            f"A potential concealed weapon was detected "
-            f"with moderate confidence ({confidence:.1%}). "
-            f"Additional inspection is advised."
+            f"The system detected a potential concealed weapon with a confidence "
+            f"score of {highest_confidence:.1%}. " 
+            f"This is classified as MEDIUM risk and should be reviewed by security personnel."
         )
 
     return (
-        "Low confidence detection identified. "
-        "Manual verification is recommended."
+        f"A low-confidence detection was identified "
+        f"({highest_confidence:.1%}). "
+        f"Manual verification is recommended before taking action."
     )
 
 def security_recommendation(confidence):
+    """
+    Generate recommended security action.
+    """
 
-    if confidence > 0.9:
+    risk_level = classify_risk(confidence)
+
+    if risk_level == "HIGH":
 
         return (
-            "Immediate security intervention recommended."
+            "Immediate security intervention recommended. "
+            "Conduct secondary screening and notify security personnel."
         )
 
-    elif confidence > 0.7:
+    elif risk_level == "MEDIUM":
 
         return (
-            "Secondary screening recommended."
+            "Secondary screening recommended. "
+            "Review the highlighted region and verify the detection."
         )
 
     return (
-        "Manual review advised."
+        "Manual review advised. "
+        "Detection confidence is low and requires verification."
     )
