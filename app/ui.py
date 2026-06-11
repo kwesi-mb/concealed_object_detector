@@ -13,9 +13,11 @@ from utils import (
 
 # Page configuration
 
+logo = Image.open("assets/temsconsu_logo.png")
+
 st.set_page_config(
     page_title="Concealed Weapon Detection",
-    page_icon="🔍",
+    page_icon=logo,
     layout="wide"
 )
 
@@ -33,6 +35,11 @@ st.markdown("""
 .main {
     background-color: white;
 }
+
+/* Remove horizontal padding from the main container */
+
+
+
 
 /* Sidebar */
 [data-testid="stSidebar"] {
@@ -53,12 +60,29 @@ h1, h2,  h3, h4, h5, h6 {
     font-weight: 700;
 }
 
-/* Metrics */
+/* Metric card container */
 [data-testid="stMetric"] {
     background-color: #f7f9fc;
     border-radius: 10px;
     padding: 15px
     border-left: 5px solid #0B4EA2;
+}
+
+/* Metric label */
+[data-testid="stMetricLabel"] {
+    color: #000000;
+    font-weight: 700;
+}
+
+/* Metric value */
+[data-testid="stMetricValue"] {
+    color: #000000;
+    font-weight: 700;
+}
+
+/* Metric delta (if any) */
+[data-testid="stMetricDelta"] {
+    color: #000000;
 }
 
 /* Upload box */
@@ -81,6 +105,16 @@ h1, h2,  h3, h4, h5, h6 {
     background-color: #083a79
 }
 
+/* Warning text */
+[data-testid="stAlert"] {
+    color: #000000;
+}
+
+[data-testid="stAlert] * {
+    color: #000000;
+    opacity:1;
+}
+
 /* Reduce top spacing */
 .block-container {
     padding-top: 1rem;
@@ -94,10 +128,10 @@ h1, h2,  h3, h4, h5, h6 {
 detector = WeaponDetector()
 
 # HEADER
-
+st.markdown('<div class="main-content">', unsafe_allow_html=True)
 from PIL import Image
 
-st.markdown("<div style='padding-top:30px;'></div>", unsafe_allow_html=True)
+#st.markdown("<div style='padding-top:30px;'></div>", unsafe_allow_html=True)
 
 logo = Image.open("assets/temsconsu_logo.png")
 
@@ -213,25 +247,10 @@ if uploaded_file:
                 f"{highest_conf:.1%}"
             )
 
-            #metric3.metric(
-            if risk_level == "HIGH":
-
-                st.error(
-                    "HIGH RISK"
-                )
-
-            elif risk_level == "MEDIUM":
-
-                st.warning(
-                    "MEDIUM RISK"
-                )
-
-            else:
-
-                st.success(
-                    "LOW RISK"
-                )
-            #)
+            metric3.metric(
+                "Risk Level",
+                risk_level
+            )
 
             st.divider()
 
@@ -245,8 +264,20 @@ if uploaded_file:
                 float(highest_conf)
             )
 
-            st.write(
-                f"{highest_conf:.1%}"
+            # st.write(
+            #     f"{highest_conf:.1%}"
+            # )
+            st.markdown(
+                f"""
+                <h3 style="
+                    color:#000000;
+                    font-weight:bold;
+                    text-align:center;
+                ">
+                    {highest_conf:.1%}
+                </h3>
+                """,
+                unsafe_allow_html=True
             )
 
             st.divider()
@@ -282,10 +313,25 @@ if uploaded_file:
                 "Recommended Action"
             )
 
-            st.warning(
-                security_recommendation(
-                    highest_conf
-                )
+            # st.warning(
+            #     security_recommendation(
+            #         highest_conf
+            #     )
+            # )
+            st.markdown(
+                f"""
+                <div style="
+                    background-color:#FFF4E5;
+                    padding:15px;
+                    border-radius:10px;
+                    border-left:5px solid #F26722;
+                    color:#000000;
+                    font-weight:500;
+                ">
+                    {security_recommendation(highest_conf)}
+                </div>
+                """,
+                unsafe_allow_html=True
             )
 
         else:
@@ -293,6 +339,8 @@ if uploaded_file:
             st.success(
                 "No concealed weapon detected."
             )
+
+#st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown("---")
 
@@ -306,9 +354,12 @@ st.markdown(
         margin-top:30px;
         border-top:5px solid #F26722;
     ">
-        <h4 style="color:white; margin:0;">
+        <p style="color:white; margin-top:8px;">
+            SecureVision AI
+        </p>
+        <p style="color:#F26722; margin-top:8px;">
             Powered by Temsconsu Software Services Company
-        </h4>
+        </p>
     </div>
     """,
     unsafe_allow_html=True
