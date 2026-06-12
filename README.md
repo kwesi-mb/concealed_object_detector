@@ -1,4 +1,4 @@
-# 🛡️ SecureVision AI
+#  SecureVision AI
 
 ### Concealed Weapon Detection & Security Screening Platform
 
@@ -191,7 +191,7 @@ To test the model:
 
 ### Backend
 
-* Python(FastAPI)
+* Python
 
 ### Frontend
 
