@@ -131,7 +131,6 @@ detector = WeaponDetector()
 st.markdown('<div class="main-content">', unsafe_allow_html=True)
 from PIL import Image
 
-#st.markdown("<div style='padding-top:30px;'></div>", unsafe_allow_html=True)
 
 logo = Image.open("assets/temsconsu_logo.png")
 
@@ -264,9 +263,7 @@ if uploaded_file:
                 float(highest_conf)
             )
 
-            # st.write(
-            #     f"{highest_conf:.1%}"
-            # )
+            
             st.markdown(
                 f"""
                 <h3 style="
@@ -313,11 +310,7 @@ if uploaded_file:
                 "Recommended Action"
             )
 
-            # st.warning(
-            #     security_recommendation(
-            #         highest_conf
-            #     )
-            # )
+            
             st.markdown(
                 f"""
                 <div style="
@@ -344,6 +337,7 @@ if uploaded_file:
 
 st.markdown("---")
 
+# Footer section
 st.markdown(
     """
     <div style="

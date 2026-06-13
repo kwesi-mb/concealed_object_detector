@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 
 
-#model_location
+
 class WeaponDetector:
 
     def __init__(self):
