@@ -24,7 +24,7 @@ The project was developed as part of the Temsconsu Software/AI Engineer assessme
 ## Project Structure
 
 ```text
-securevision-ai/
+concealed_object_detector
 │
 ├── app/
 │   ├── detector.py
@@ -68,7 +68,7 @@ These results demonstrate strong weapon detection performance while maintaining 
 ```bash
 git clone <repository-url>
 
-cd securevision-ai
+cd concealed_object_detector
 ```
 
 ### 2. Create a Virtual Environment
