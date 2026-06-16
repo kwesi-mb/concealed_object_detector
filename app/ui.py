@@ -92,6 +92,12 @@ h1, h2,  h3, h4, h5, h6 {
     padding: 10px;
 }
 
+/* Radio button text */
+[data-testid="stRadio] label {
+    color: #000000 !important;
+    font-weight: 600 !important;
+}
+
 /* Buttons */
 .stButton > button {
     background-color: #0B4EA2;
@@ -125,7 +131,13 @@ h1, h2,  h3, h4, h5, h6 {
 
 # LOAD MODEL
 
-detector = WeaponDetector()
+thermal_detector = WeaponDetector(
+    "model/thermal_best.pt"
+)
+
+rgb_detector = WeaponDetector(
+    "model/rgb_best.pt"
+)
 
 # HEADER
 st.markdown('<div class="main-content">', unsafe_allow_html=True)
@@ -165,6 +177,23 @@ uploaded_file = st.file_uploader(
     type=["jpg", "jpeg", "png"]
 )
 
+st.markdown(
+    """
+    <h4 style='color:black; font-weight:bold;'>
+        Select Detection Model
+    </h4>
+    """,
+    unsafe_allow_html=True    
+)
+
+model_choice = st.selectbox(
+    "",
+    [
+        "Thermal Weapon Detector",
+        "RGB Weapon Detector"
+    ]
+)
+
 # DETECTION WORKFLOW
 
 if uploaded_file:
@@ -186,8 +215,18 @@ if uploaded_file:
         # Original image
         original_image = Image.open(image_path)
 
-        #Run inference
+        # Run Inference
+        if model_choice == "Thermal Weapon Detector":
+            detector = thermal_detector
+
+        else:
+            detector = rgb_detector
+
         results = detector.detect(image_path)
+
+        st.success(
+            f"Using {model_choice}"
+        )
 
         # Draw detection
         output_image, detections = draw_detections(
