@@ -131,8 +131,8 @@ h1, h2,  h3, h4, h5, h6 {
 
 # LOAD MODEL
 
-thermal_detector = WeaponDetector(
-    "model/thermal_best.pt"
+gun_detector = WeaponDetector(
+    "model/weapondetect_best.pt"
 )
 
 rgb_detector = WeaponDetector(
@@ -189,7 +189,7 @@ st.markdown(
 model_choice = st.selectbox(
     "",
     [
-        "Thermal Weapon Detector",
+        "Weapon Detector",
         "RGB Weapon Detector"
     ]
 )
@@ -216,8 +216,8 @@ if uploaded_file:
         original_image = Image.open(image_path)
 
         # Run Inference
-        if model_choice == "Thermal Weapon Detector":
-            detector = thermal_detector
+        if model_choice == "Weapon Detector":
+            detector = gun_detector
 
         else:
             detector = rgb_detector
